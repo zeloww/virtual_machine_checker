@@ -1,4 +1,5 @@
-from os import system
+from json import dumps
+from os import system, environ
 from urllib.request import urlopen
 
 try:
@@ -29,7 +30,8 @@ virtual_checker = """
 						╚██████╗██║  ██║███████╗╚██████╗██║  ██╗███████╗██║  ██║
 						 ╚═════╝╚═╝  ╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
 				 				1 > virtual checker		by github.gg/zeloww
-				 			2 > list of all real manufacturers"""
+				 			2 > list of all real manufacturers
+"""
 
 def all_manufacturers():
 	result = ""
@@ -78,6 +80,34 @@ def virtual_check():
 	else:
 		return False
 
+def getSystemInfo():
+	try:
+		computer = wmi.WMI()
+
+		os_info = computer.Win32_OperatingSystem()[0]
+		os_name = os_info.Name.encode("utf-8").split(b"|")[0].decode()
+		proc_info = computer.Win32_Processor()[0].Name
+		gpu_info = computer.Win32_VideoController()[0].Name
+		system_ram = str(round(float(os_info.TotalVisibleMemorySize) / 1048576))
+
+		for interface in computer.Win32_NetworkAdapterConfiguration(IPEnabled=True):
+			ip_address = interface.IPAddress[0]
+			mac_adress = interface.MACAddress
+
+		info = {}
+		info["Hostname"]= environ["COMPUTERNAME"]
+		info["Platform"] = os_name
+		info["IP-address"] = ip_address
+		info["MAC-Address"] = mac_adress
+		info["Processor"] = proc_info
+		info["Graphics Card"] = gpu_info
+		info["RAM"] = system_ram + " GB"
+
+		return dumps(info, indent=4)
+
+	except Exception as e:
+		return e
+
 def main():
 	while True:
 		system("cls")
@@ -88,10 +118,12 @@ def main():
 
 		if choice == "1":
 			if virtual_check():
-				input("\033[32m[+] You aren't a virtual machine!\033[0m")
+				print("\033[32m[+] This isn't a virtual machine!\n\033[0m")
 
 			else:
-				input("\033[31m[-] You are a virtual machine!\033[0m")
+				print("\033[31m[-] This is a virtual machine!\n\033[0m")
+
+			input(getSystemInfo())
 
 		elif choice == "2":
 			input(all_manufacturers())
