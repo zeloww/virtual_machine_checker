@@ -7,14 +7,14 @@ try:
 
 except:
     system("py -m pip install wmi")
-    from os import system
+    import wmi
 
 try:
     from bs4 import BeautifulSoup
 
 except:
     system("py -m pip install wmi")
-    from os import system
+    from bs4 import BeautifulSoup
 
 virtual_checker = """
 						██╗   ██╗██╗██████╗ ████████╗██╗   ██╗ █████╗ ██╗
